@@ -24,6 +24,7 @@ public class Tiko2018ht {
         kirjaudu(con, "Matti", "sipuli");
         System.out.println("Kirjautunut: " + kirjautunut);
         hae(con, "Turms");
+        lisaa(con, "1234567890", "Esimteos1", "Taidejäbä", "romaani", "huumori", 15.99, 280, 21.99);
     }
     
 	//Yhteyden muodostaminen
@@ -147,12 +148,11 @@ public class Tiko2018ht {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("Tapahtui virhe: " + e);
+            System.out.println(VIRHE + e);
         }
         return loytyi;
     }
     
-    //Ei toimi
     private static boolean onkoOlemassa(Connection con, String teos_nimi, String tekija) {
         boolean retVal = false;
         try {
@@ -166,24 +166,64 @@ public class Tiko2018ht {
                 }
             } 
         } catch (SQLException e) {
-            System.err.println("Haku ei onnistunut: " + e);
+            System.err.println(VIRHE + e);
         }
         return retVal;
     }
     
-    //Kesken
-    public static void lisaa(Connection con, String isbn, String teos_nimi, String tekija, String tyyppi, String luokka, int d_id) {
+    public static void lisaa(Connection con, String isbn, String teos_nimi, String tekija,
+                             String tyyppi, String luokka, double ostohinta, int paino,
+                             double hinta) {
         if (onkoOlemassa(con, teos_nimi, tekija)) {
+            int kpl_id = 0;
             try {
-                PreparedStatement prstmt = con.prepareStatement("INSERT INTO teos_kpl "+
-                                                                "VALUES (?, ?, ?, ?, ?, ?, ?);");
+                PreparedStatement prstmt = con.prepareStatement("SELECT MAX(kpl_id) FROM teos_kpl "+
+                                                                "WHERE isbn = ?;");
+                prstmt.clearParameters();
                 prstmt.setString(1, isbn);
-                prstmt.setString(2, 
-                prstmt.setString(3, 
-                prstmt.setString(4, 
-                prstmt.setString(5, 
-                prstmt.setString(6, 
-                prstmt.setString(7, 
+                ResultSet rs = prstmt.executeQuery();
+                if (rs.next()) {
+                    kpl_id = rs.getInt("max");
+                }
+                ++kpl_id;
+                prstmt = con.prepareStatement("INSERT INTO teos_kpl "+
+                                              "VALUES (?, ?, ?, ?, null, ?, null);");
+                prstmt.clearParameters();
+                prstmt.setInt(1, kpl_id);
+                prstmt.setString(2, isbn);
+                prstmt.setDouble(3, ostohinta);
+                prstmt.setInt(4, paino);
+                prstmt.setDouble(5, hinta);
+                int muuttui = prstmt.executeUpdate();
+                System.out.println("Rivejä muuttui: " + muuttui);
+            } catch (SQLException e) {
+                System.err.println(VIRHE + e);
+            }
+        } else {
+            int kpl_id = 1;
+            try {
+                PreparedStatement prstmt = con.prepareStatement("INSERT INTO teos "+
+                                                                "VALUES (?, ?, ?, ?, ?)");
+                prstmt.clearParameters();
+                prstmt.setString(1, isbn);
+                prstmt.setString(2, teos_nimi);
+                prstmt.setString(3, tekija);
+                prstmt.setString(4, tyyppi);
+                prstmt.setString(5, luokka);
+                int muuttui = prstmt.executeUpdate();
+                
+                prstmt = con.prepareStatement("INSERT INTO teos_kpl "+
+                                              "VALUES (?, ?, ?, ?, null, ?, null)");
+                prstmt.clearParameters();
+                prstmt.setInt(1, kpl_id);
+                prstmt.setString(2, isbn);
+                prstmt.setDouble(3, ostohinta);
+                prstmt.setInt(4, paino);
+                prstmt.setDouble(5, hinta);
+                muuttui = muuttui + prstmt.executeUpdate();
+                System.out.println("Rivejä muuttui: " + muuttui);
+            } catch (SQLException e) {
+                System.err.println(VIRHE + e);
             }
         }
     }
