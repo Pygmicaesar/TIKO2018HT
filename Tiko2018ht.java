@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.*;
 
 /**
  *
@@ -17,7 +18,12 @@ public class Tiko2018ht {
     public static void main(String[] args) {
         //Testailua
         Connection con = connect();
-        rekisteroi(con, "Atte Asiakas", "atte@asiakas.fi", "esimkatu 1", "123-1234567", "asd123");
+        rekisteroi(con, "Matti", "asdasd", "asadafdf", "342-2323233", "sipuli");
+        kirjaudu(con, "Atte Asiakas", "asd123");
+        System.out.println("Kirjautunut: " + kirjautunut);
+        kirjaudu(con, "Matti", "sipuli");
+        System.out.println("Kirjautunut: " + kirjautunut);
+        hae(con, "Turms");
     }
     
 	//Yhteyden muodostaminen
@@ -91,19 +97,16 @@ public class Tiko2018ht {
             }
 
         } else {
-
             System.out.println("Käyttäjä on jo olemassa!");
         }
-
-
     }
-
+    
     public static void kirjaudu(Connection con, String as_nimi, String salasana) {
         try {
             PreparedStatement prstmt = con.prepareStatement("SELECT as_id, as_nimi, salasana "+
-                    "FROM asiakas "+
-                    "WHERE as_nimi = ? AND "+
-                    "salasana = ?");
+                                                            "FROM asiakas "+
+                                                            "WHERE as_nimi = ? AND "+
+                                                            "salasana = ?");
             prstmt.clearParameters();
             prstmt.setString(1, as_nimi);
             prstmt.setString(2, salasana);
@@ -116,6 +119,72 @@ public class Tiko2018ht {
             }
         } catch (SQLException e) {
             System.err.println(VIRHE + e);
+        }
+    }
+    
+    //Palauttaa LinkedList-olion, joka sisältää hakutuloksen Kirja-olioina
+    //Toimii
+    public static LinkedList<Kirja> hae(Connection con, String haku) {
+        LinkedList<Kirja> loytyi = new LinkedList();
+        Kirja k = null;
+        try {
+            PreparedStatement prstmt = con.prepareStatement("SELECT isbn, teos_nimi, tekija, tyyppi, luokka "+
+                                                            "FROM teos;");
+            ResultSet rs = prstmt.executeQuery();
+            while (rs.next()) {
+                if (rs.getString("teos_nimi").contains(haku)) {
+                    k = new Kirja(rs.getString("isbn"), rs.getString("teos_nimi"), rs.getString("tekija"), rs.getString("tyyppi"), rs.getString("luokka"));
+                } else if (rs.getString("tekija").contains(haku)) {
+                    k = new Kirja(rs.getString("isbn"), rs.getString("teos_nimi"), rs.getString("tekija"), rs.getString("tyyppi"), rs.getString("luokka"));
+                } else if (rs.getString("tyyppi").contains(haku)) {
+                    k = new Kirja(rs.getString("isbn"), rs.getString("teos_nimi"), rs.getString("tekija"), rs.getString("tyyppi"), rs.getString("luokka"));
+                } else if (rs.getString("luokka").contains(haku)) {
+                    k = new Kirja(rs.getString("isbn"), rs.getString("teos_nimi"), rs.getString("tekija"), rs.getString("tyyppi"), rs.getString("luokka"));
+                }
+                
+                if (k != null) {
+                    loytyi.add(k);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Tapahtui virhe: " + e);
+        }
+        return loytyi;
+    }
+    
+    //Ei toimi
+    private static boolean onkoOlemassa(Connection con, String teos_nimi, String tekija) {
+        boolean retVal = false;
+        try {
+            PreparedStatement prstmt = con.prepareStatement("SELECT teos_nimi, tekija "+
+                                                            "FROM teos;");
+            ResultSet rs = prstmt.executeQuery();
+            while (rs.next()) {
+                if (rs.getString("teos_nimi").equals(teos_nimi) &&
+                   (rs.getString("tekija").equals(tekija))) {
+                        retVal = true;
+                }
+            } 
+        } catch (SQLException e) {
+            System.err.println("Haku ei onnistunut: " + e);
+        }
+        return retVal;
+    }
+    
+    //Kesken
+    public static void lisaa(Connection con, String isbn, String teos_nimi, String tekija, String tyyppi, String luokka, int d_id) {
+        if (onkoOlemassa(con, teos_nimi, tekija)) {
+            try {
+                PreparedStatement prstmt = con.prepareStatement("INSERT INTO teos_kpl "+
+                                                                "VALUES (?, ?, ?, ?, ?, ?, ?);");
+                prstmt.setString(1, isbn);
+                prstmt.setString(2, 
+                prstmt.setString(3, 
+                prstmt.setString(4, 
+                prstmt.setString(5, 
+                prstmt.setString(6, 
+                prstmt.setString(7, 
+            }
         }
     }
 }
