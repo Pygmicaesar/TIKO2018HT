@@ -17,7 +17,11 @@ public class Tiko2018ht {
     public static void main(String[] args) {
         //Testailua
         Connection con = connect();
-        rekisteroi(con, "Atte Asiakas", "atte@asiakas.fi", "esimkatu 1", "123-1234567", "asd123");
+        rekisteroi(con, "Matti", "asdasd", "asadafdf", "342-2323233", "sipuli");
+        kirjaudu(con, "Atte Asiakas", "asd123");
+        System.out.println("Kirjautunut: " + kirjautunut);
+        kirjaudu(con, "Matti", "sipuli");
+        System.out.println("Kirjautunut: " + kirjautunut);
     }
     
 	//Yhteyden muodostaminen
@@ -74,9 +78,9 @@ public class Tiko2018ht {
     //Ei toimi
     public static void kirjaudu(Connection con, String as_nimi, String salasana) {
         try {
-            PreparedStatement prstmt = con.prepareStatement("SELECT as_nimi, salasana"+
-                                                            "FROM asiakas"+
-                                                            "WHERE as_nimi = ? AND"+
+            PreparedStatement prstmt = con.prepareStatement("SELECT as_id, as_nimi, salasana "+
+                                                            "FROM asiakas "+
+                                                            "WHERE as_nimi = ? AND "+
                                                             "salasana = ?");
             prstmt.clearParameters();
             prstmt.setString(1, as_nimi);
@@ -84,7 +88,7 @@ public class Tiko2018ht {
             ResultSet rs = prstmt.executeQuery();
             if (!rs.wasNull()) {
                 rs.next();
-                rs.getInt("as_id");
+                kirjautunut = rs.getInt("as_id");
             } else {
                 System.out.println("Kirjautuminen epäonnistui!");
             }
