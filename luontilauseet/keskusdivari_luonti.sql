@@ -48,7 +48,7 @@ hinta DECIMAL(4, 2) NOT NULL,
 tilaus_id INT,
 FOREIGN KEY (tilaus_id) REFERENCES tilaus(tilaus_id),
 FOREIGN KEY (isbn) REFERENCES teos(isbn),
-PRIMARY KEY (kpl_id));
+PRIMARY KEY (kpl_id, isbn));
 
 
 CREATE TABLE postikulut (
