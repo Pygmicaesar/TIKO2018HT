@@ -143,18 +143,32 @@ public class Tiko2018ht {
         LinkedList<Nide> loytyi = new LinkedList();
         Nide n = null;
         try {
-            PreparedStatement prstmt = con.prepareStatement("SELECT isbn, teos_nimi, tekija, tyyppi, luokka "+
-                                                            "FROM teos;");
+            PreparedStatement prstmt = con.prepareStatement("SELECT isbn, teos_nimi, tekija, "+
+                                                            "tyyppi, luokka, kpl_id, hinta, paino, "+
+                                                            "FROM teos INNER JOIN teos_kpl "+
+                                                            "ON teos.isbn = teos_kpl.isbn;");
             ResultSet rs = prstmt.executeQuery();
             while (rs.next()) {
                 if (rs.getString("teos_nimi").contains(haku)) {
-                    n = new Nide(rs.getString("isbn"), rs.getString("teos_nimi"), rs.getString("tekija"), rs.getString("tyyppi"), rs.getString("luokka"), null);
+                    n = new Nide(rs.getString("isbn"), rs.getString("teos_nimi"),
+                                 rs.getString("tekija"), rs.getString("tyyppi"), 
+                                 rs.getString("luokka"), rs.getInt("kpl_id"), 
+                                 rs.getDouble("hinta"), rs.getDouble("paino"));
                 } else if (rs.getString("tekija").contains(haku)) {
-                    n = new Nide(rs.getString("isbn"), rs.getString("teos_nimi"), rs.getString("tekija"), rs.getString("tyyppi"), rs.getString("luokka"), null);
+                    n = new Nide(rs.getString("isbn"), rs.getString("teos_nimi"),
+                                 rs.getString("tekija"), rs.getString("tyyppi"), 
+                                 rs.getString("luokka"), rs.getInt("kpl_id"), 
+                                 rs.getDouble("hinta"), rs.getDouble("paino"));
                 } else if (rs.getString("tyyppi").contains(haku)) {
-                    n = new Nide(rs.getString("isbn"), rs.getString("teos_nimi"), rs.getString("tekija"), rs.getString("tyyppi"), rs.getString("luokka"), null);
+                    n = new Nide(rs.getString("isbn"), rs.getString("teos_nimi"),
+                                 rs.getString("tekija"), rs.getString("tyyppi"), 
+                                 rs.getString("luokka"), rs.getInt("kpl_id"), 
+                                 rs.getDouble("hinta"), rs.getDouble("paino"));
                 } else if (rs.getString("luokka").contains(haku)) {
-                    n = new Nide(rs.getString("isbn"), rs.getString("teos_nimi"), rs.getString("tekija"), rs.getString("tyyppi"), rs.getString("luokka"), null);
+                    n = new Nide(rs.getString("isbn"), rs.getString("teos_nimi"),
+                                 rs.getString("tekija"), rs.getString("tyyppi"), 
+                                 rs.getString("luokka"), rs.getInt("kpl_id"), 
+                                 rs.getDouble("hinta"), rs.getDouble("paino"));
                 }
                 
                 if (n != null) {
