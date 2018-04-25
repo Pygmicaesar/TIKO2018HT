@@ -353,6 +353,160 @@ public class Tiko2018ht {
 
     }
 
+    
+    //Ei toimi
+    public static LinkedList<Nide> hae(Connection con, String hakukohde, String haku) {
+        LinkedList<Nide> loytyi = new LinkedList();
+        String[] haut = haku.split(" ");
+        try {
+            PreparedStatement prstmt = con.prepareStatement("SELECT isbn, teos_nimi, tekija, "+
+                                                            "tyyppi, luokka, kpl_id, hinta, paino, "+
+                                                            "FROM teos INNER JOIN teos_kpl "+
+                                                            "ON teos.isbn = teos_kpl.isbn;");
+            ResultSet rs = prstmt.executeQuery();
+            while (rs.next()) {
+                Nide n = new Nide(null, null, null, null, null, 0, 0.0, 0);
+                boolean noMatches = true;
+                switch (hakukohde) {
+                    case "teos_nimi":
+                        String[] teosnimi = rs.getString("teos_nimi").split(" ");
+                        for (int i = 0; i < haut.length; ++i) {
+                            for (int j = 0; j < teosnimi.length; ++j) {
+                                if (haut[i].equalsIgnoreCase(teosnimi[j])) {
+                                    if (noMatches) {
+                                        noMatches = false;
+                                        n.isbn(rs.getString("isbn"));
+                                        n.teosNimi(rs.getString("teos_nimi"));
+                                        n.tekija(rs.getString("tekija"));
+                                        n.tyyppi(rs.getString("tyyppi"));
+                                        n.luokka(rs.getString("luokka"));
+                                        n.kpl_id(rs.getInt("kpl_id"));
+                                        n.hinta(rs.getDouble("hinta"));
+                                    }
+                                    ++n.osumia;                                    
+                                } else {
+                                    if (noMatches && rs.getString("teos_nimi").contains(haut[i])) {
+                                        n.isbn(rs.getString("isbn"));
+                                        n.teosNimi(rs.getString("teos_nimi"));
+                                        n.tekija(rs.getString("tekija"));
+                                        n.tyyppi(rs.getString("tyyppi"));
+                                        n.luokka(rs.getString("luokka"));
+                                        n.kpl_id(rs.getInt("kpl_id"));
+                                        n.hinta(rs.getDouble("hinta"));
+                                        ++n.osumia;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "tekija":
+                        String[] tekija = rs.getString("tekija").split(" ");
+                        for (int i = 0; i < haut.length; ++i) {
+                            for (int j = 0; j < tekija.length; ++j) {
+                                if (haut[i].equalsIgnoreCase(tekija[j])) {
+                                    if (noMatches) {
+                                        noMatches = false;
+                                        n.isbn(rs.getString("isbn"));
+                                        n.teosNimi(rs.getString("teos_nimi"));
+                                        n.tekija(rs.getString("tekija"));
+                                        n.tyyppi(rs.getString("tyyppi"));
+                                        n.luokka(rs.getString("luokka"));
+                                        n.kpl_id(rs.getInt("kpl_id"));
+                                        n.hinta(rs.getDouble("hinta"));
+                                    }
+                                    ++n.osumia;                                    
+                                } else {
+                                    if (noMatches && rs.getString("tekija").contains(haut[i])) {
+                                        n.isbn(rs.getString("isbn"));
+                                        n.teosNimi(rs.getString("teos_nimi"));
+                                        n.tekija(rs.getString("tekija"));
+                                        n.tyyppi(rs.getString("tyyppi"));
+                                        n.luokka(rs.getString("luokka"));
+                                        n.kpl_id(rs.getInt("kpl_id"));
+                                        n.hinta(rs.getDouble("hinta"));
+                                        ++n.osumia;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "tyyppi":
+                        String[] tyyppi = rs.getString("tyyppi").split(" ");
+                        for (int i = 0; i < haut.length; ++i) {
+                            for (int j = 0; j < tyyppi.length; ++j) {
+                                if (haut[i].equalsIgnoreCase(tyyppi[j])) {
+                                    if (noMatches) {
+                                        noMatches = false;
+                                        n.isbn(rs.getString("isbn"));
+                                        n.teosNimi(rs.getString("teos_nimi"));
+                                        n.tekija(rs.getString("tekija"));
+                                        n.tyyppi(rs.getString("tyyppi"));
+                                        n.luokka(rs.getString("luokka"));
+                                        n.kpl_id(rs.getInt("kpl_id"));
+                                        n.hinta(rs.getDouble("hinta"));
+                                    }
+                                    ++n.osumia;                                    
+                                } else {
+                                    if (noMatches && rs.getString("tyyppi").contains(haut[i])) {
+                                        n.isbn(rs.getString("isbn"));
+                                        n.teosNimi(rs.getString("teos_nimi"));
+                                        n.tekija(rs.getString("tekija"));
+                                        n.tyyppi(rs.getString("tyyppi"));
+                                        n.luokka(rs.getString("luokka"));
+                                        n.kpl_id(rs.getInt("kpl_id"));
+                                        n.hinta(rs.getDouble("hinta"));
+                                        ++n.osumia;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                        
+                    case "luokka":
+                        String[] luokka = rs.getString("luokka").split(" ");
+                        for (int i = 0; i < haut.length; ++i) {
+                            for (int j = 0; j < luokka.length; ++j) {
+                                if (haut[i].equalsIgnoreCase(luokka[j])) {
+                                    if (noMatches) {
+                                        noMatches = false;
+                                        n.isbn(rs.getString("isbn"));
+                                        n.teosNimi(rs.getString("teos_nimi"));
+                                        n.tekija(rs.getString("tekija"));
+                                        n.tyyppi(rs.getString("tyyppi"));
+                                        n.luokka(rs.getString("luokka"));
+                                        n.kpl_id(rs.getInt("kpl_id"));
+                                        n.hinta(rs.getDouble("hinta"));
+                                    }
+                                    ++n.osumia;                                    
+                                } else {
+                                    if (noMatches && rs.getString("luokka").contains(haut[i])) {
+                                        n.isbn(rs.getString("isbn"));
+                                        n.teosNimi(rs.getString("teos_nimi"));
+                                        n.tekija(rs.getString("tekija"));
+                                        n.tyyppi(rs.getString("tyyppi"));
+                                        n.luokka(rs.getString("luokka"));
+                                        n.kpl_id(rs.getInt("kpl_id"));
+                                        n.hinta(rs.getDouble("hinta"));
+                                        ++n.osumia;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    default:
+                        System.out.println("Virheellinen hakukohde!");
+                        break;
+                }
+                if (n.isbn() != null) {
+                    loytyi.add(n);
+                }
+            }
+            
+        } catch (SQLException e) {
+            System.err.println(VIRHE + e);
+        }
+    }
+    
     //Palauttaa LinkedList-olion, joka sisältää hakutuloksen Kirja-olioina
     //Toimii
     public static LinkedList<Nide> hae(Connection con, String haku) {
@@ -415,62 +569,68 @@ public class Tiko2018ht {
         return retVal;
     }
 
+    //divari-arvo 1: divarin ylläpitäjä
+    //divari-arvo 2: keskusdivarin ylläpitäjä
     public static void lisaa(Connection con, String isbn, String teos_nimi, String tekija,
                              String tyyppi, String luokka, double ostohinta, int paino,
-                             double hinta, int d_id) {
-        if (onkoOlemassa(con, teos_nimi, tekija)) {
-            int kpl_id = 0;
-            try {
-                PreparedStatement prstmt = con.prepareStatement("SELECT MAX(kpl_id) FROM teos_kpl "+
-                        "WHERE isbn = ?;");
-                prstmt.clearParameters();
-                prstmt.setString(1, isbn);
-                ResultSet rs = prstmt.executeQuery();
-                if (rs.next()) {
-                    kpl_id = rs.getInt("max");
+                             double hinta, int d_id, int divari) {
+        if (kirjautunut == divari) {
+            if (onkoOlemassa(con, teos_nimi, tekija)) {
+                int kpl_id = 0;
+                try {
+                    PreparedStatement prstmt = con.prepareStatement("SELECT MAX(kpl_id) FROM teos_kpl "+
+                            "WHERE isbn = ?;");
+                    prstmt.clearParameters();
+                    prstmt.setString(1, isbn);
+                    ResultSet rs = prstmt.executeQuery();
+                    if (rs.next()) {
+                        kpl_id = rs.getInt("max");
+                    }
+                    ++kpl_id;
+                    prstmt = con.prepareStatement("INSERT INTO teos_kpl "+
+                            "VALUES (?, ?, ?, ?, null, ?, null, ?);");
+                    prstmt.clearParameters();
+                    prstmt.setInt(1, kpl_id);
+                    prstmt.setString(2, isbn);
+                    prstmt.setDouble(3, ostohinta);
+                    prstmt.setInt(4, paino);
+                    prstmt.setDouble(5, hinta);
+                    prstmt.setInt(6, d_id);
+                    int muuttui = prstmt.executeUpdate();
+                    System.out.println("Rivejä muuttui: " + muuttui);
+                } catch (SQLException e) {
+                    System.err.println(VIRHE + e);
                 }
-                ++kpl_id;
-                prstmt = con.prepareStatement("INSERT INTO teos_kpl "+
-                        "VALUES (?, ?, ?, ?, null, ?, null, ?);");
-                prstmt.clearParameters();
-                prstmt.setInt(1, kpl_id);
-                prstmt.setString(2, isbn);
-                prstmt.setDouble(3, ostohinta);
-                prstmt.setInt(4, paino);
-                prstmt.setDouble(5, hinta);
-                prstmt.setInt(6, d_id);
-                int muuttui = prstmt.executeUpdate();
-                System.out.println("Rivejä muuttui: " + muuttui);
-            } catch (SQLException e) {
-                System.err.println(VIRHE + e);
+            } else {
+                int kpl_id = 1;
+                try {
+                    PreparedStatement prstmt = con.prepareStatement("INSERT INTO teos "+
+                            "VALUES (?, ?, ?, ?, ?)");
+                    prstmt.clearParameters();
+                    prstmt.setString(1, isbn);
+                    prstmt.setString(2, teos_nimi);
+                    prstmt.setString(3, tekija);
+                    prstmt.setString(4, tyyppi);
+                    prstmt.setString(5, luokka);
+                    int muuttui = prstmt.executeUpdate();
+
+                    prstmt = con.prepareStatement("INSERT INTO teos_kpl "+
+                            "VALUES (?, ?, ?, ?, null, ?, null, ?)");
+                    prstmt.clearParameters();
+                    prstmt.setInt(1, kpl_id);
+                    prstmt.setString(2, isbn);
+                    prstmt.setDouble(3, ostohinta);
+                    prstmt.setInt(4, paino);
+                    prstmt.setDouble(5, hinta);
+                    prstmt.setInt(6, d_id);
+                    muuttui = muuttui + prstmt.executeUpdate();
+                    System.out.println("Rivejä muuttui: " + muuttui);
+                } catch (SQLException e) {
+                    System.err.println(VIRHE + e);
+                }
             }
         } else {
-            int kpl_id = 1;
-            try {
-                PreparedStatement prstmt = con.prepareStatement("INSERT INTO teos "+
-                        "VALUES (?, ?, ?, ?, ?)");
-                prstmt.clearParameters();
-                prstmt.setString(1, isbn);
-                prstmt.setString(2, teos_nimi);
-                prstmt.setString(3, tekija);
-                prstmt.setString(4, tyyppi);
-                prstmt.setString(5, luokka);
-                int muuttui = prstmt.executeUpdate();
-
-                prstmt = con.prepareStatement("INSERT INTO teos_kpl "+
-                        "VALUES (?, ?, ?, ?, null, ?, null, ?)");
-                prstmt.clearParameters();
-                prstmt.setInt(1, kpl_id);
-                prstmt.setString(2, isbn);
-                prstmt.setDouble(3, ostohinta);
-                prstmt.setInt(4, paino);
-                prstmt.setDouble(5, hinta);
-                prstmt.setInt(6, d_id);
-                muuttui = muuttui + prstmt.executeUpdate();
-                System.out.println("Rivejä muuttui: " + muuttui);
-            } catch (SQLException e) {
-                System.err.println(VIRHE + e);
-            }
+            System.out.println("Ei oikeuksia!");
         }
     }
 }

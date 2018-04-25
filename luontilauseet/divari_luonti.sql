@@ -22,6 +22,7 @@ paino INT NOT NULL,
 myyntipvm DATE,
 hinta DECIMAL(4, 2) NOT NULL,
 arvo VARCHAR(50),
+d_id INT NOT NULL,
 PRIMARY KEY (kpl_id, isbn),
 FOREIGN KEY (arvo) REFERENCES divaritieto(arvo),
 FOREIGN KEY (isbn) REFERENCES teos(isbn));
