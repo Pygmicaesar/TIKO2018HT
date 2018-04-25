@@ -139,26 +139,26 @@ public class Tiko2018ht {
     
     //Palauttaa LinkedList-olion, joka sisältää hakutuloksen Kirja-olioina
     //Toimii
-    public static LinkedList<Kirja> hae(Connection con, String haku) {
-        LinkedList<Kirja> loytyi = new LinkedList();
-        Kirja k = null;
+    public static LinkedList<Nide> hae(Connection con, String haku) {
+        LinkedList<Nide> loytyi = new LinkedList();
+        Nide n = null;
         try {
             PreparedStatement prstmt = con.prepareStatement("SELECT isbn, teos_nimi, tekija, tyyppi, luokka "+
                                                             "FROM teos;");
             ResultSet rs = prstmt.executeQuery();
             while (rs.next()) {
                 if (rs.getString("teos_nimi").contains(haku)) {
-                    k = new Kirja(rs.getString("isbn"), rs.getString("teos_nimi"), rs.getString("tekija"), rs.getString("tyyppi"), rs.getString("luokka"));
+                    n = new Nide(rs.getString("isbn"), rs.getString("teos_nimi"), rs.getString("tekija"), rs.getString("tyyppi"), rs.getString("luokka"), null);
                 } else if (rs.getString("tekija").contains(haku)) {
-                    k = new Kirja(rs.getString("isbn"), rs.getString("teos_nimi"), rs.getString("tekija"), rs.getString("tyyppi"), rs.getString("luokka"));
+                    n = new Nide(rs.getString("isbn"), rs.getString("teos_nimi"), rs.getString("tekija"), rs.getString("tyyppi"), rs.getString("luokka"), null);
                 } else if (rs.getString("tyyppi").contains(haku)) {
-                    k = new Kirja(rs.getString("isbn"), rs.getString("teos_nimi"), rs.getString("tekija"), rs.getString("tyyppi"), rs.getString("luokka"));
+                    n = new Nide(rs.getString("isbn"), rs.getString("teos_nimi"), rs.getString("tekija"), rs.getString("tyyppi"), rs.getString("luokka"), null);
                 } else if (rs.getString("luokka").contains(haku)) {
-                    k = new Kirja(rs.getString("isbn"), rs.getString("teos_nimi"), rs.getString("tekija"), rs.getString("tyyppi"), rs.getString("luokka"));
+                    n = new Nide(rs.getString("isbn"), rs.getString("teos_nimi"), rs.getString("tekija"), rs.getString("tyyppi"), rs.getString("luokka"), null);
                 }
                 
-                if (k != null) {
-                    loytyi.add(k);
+                if (n != null) {
+                    loytyi.add(n);
                 }
             }
         } catch (SQLException e) {
