@@ -13,7 +13,7 @@ CREATE FUNCTION paivita_teos() RETURNS TRIGGER AS $paivita_teos_kd$
 $paivita_teos_kd$ LANGUAGE plpgsql;
 
 CREATE TRIGGER paivita_teos_kd 
-AFTER INSERT ON teos 
+AFTER INSERT OR UPDATE ON teos 
 FOR EACH ROW EXECUTE PROCEDURE paivita_teos();
 
 CREATE FUNCTION paivita_teos_kpl() RETURNS TRIGGER AS $paivita_teos_kpl_kd$
@@ -24,5 +24,5 @@ CREATE FUNCTION paivita_teos_kpl() RETURNS TRIGGER AS $paivita_teos_kpl_kd$
 $paivita_teos_kpl_kd$ LANGUAGE plpgsql;
 
 CREATE TRIGGER paivita_teos_kpl_kd 
-AFTER INSERT ON teos_kpl 
+AFTER INSERT OR UPDATE ON teos_kpl 
 FOR EACH ROW EXECUTE PROCEDURE paivita_teos_kpl();
