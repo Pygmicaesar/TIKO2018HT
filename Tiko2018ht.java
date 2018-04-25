@@ -10,8 +10,10 @@ public class Tiko2018ht {
     // Default messages used by the program.
     public static final String SYOTAKOMENTO = "Mitä haluaisit tehdä?";
     public static final String TERVETULOA = "Tervetuloa Keijon Keskusdivariin!";
-    public static final String UUSIVAIVANHA= "Haluatko kirjautua sisään vai rekisteröityä? kirjaudu / rekisteröidy";
+    public static final String UUSIVAIVANHA = "Haluatko kirjautua sisään vai rekisteröityä? kirjaudu / rekisteröidy";
+    public static final String ULOS = "Olet kirjautunut ulos.";
     public static final String NAKEMIIN = "Kiitos käynnistä, näkemiin!";
+    public static final String KOMENTOVIRHE = "Komentoa ei tunnistettu!";
     public static final String VIRHE = "Tapahtui seuraava virhe: ";
 
     // Command recognised by the program.
@@ -55,25 +57,52 @@ public class Tiko2018ht {
 
         do {
 
-            // Silmukka rekisteröitymiseen/kirjautumiseen.
-            do {
+            if (kirjautunut == 0) {
+                // Silmukka rekisteröitymiseen/kirjautumiseen.
+                do {
 
-                Scanner lukija = new Scanner(System.in);
-                System.out.println(UUSIVAIVANHA);
+                    Scanner lukija = new Scanner(System.in);
+                    System.out.println(UUSIVAIVANHA);
 
-                if (lukija.nextLine().equals(KIRJAUDU)) {
-                    onnistuiko = kirjaudu(kdCon);
-                } else if (lukija.nextLine().equals(REKISTEROIDY)) {
-                    onnistuiko = rekisteroi(kdCon);
-                } else {
-                    System.out.println("Komentoa ei tunnistettu!");
-                }
+                    if (lukija.nextLine().equals(KIRJAUDU)) {
+                        onnistuiko = kirjaudu(kdCon);
+                    } else if (lukija.nextLine().equals(REKISTEROIDY)) {
+                        onnistuiko = rekisteroi(kdCon);
+                    } else {
+                        System.out.println(KOMENTOVIRHE);
+                    }
 
-                lukija.close();
+                    lukija.close();
 
-            } while(!onnistuiko);
+                } while(!onnistuiko);
+            }
 
+            Scanner lukija = new Scanner(System.in);
             System.out.println(SYOTAKOMENTO);
+            String komento = lukija.nextLine();
+
+            if (komento.equals(HAE)) {
+
+            } else if (komento.startsWith(LISAA)) {
+
+            } else if (komento.startsWith(POISTA)) {
+
+            } else if (komento.equals(OSTOSKORI)) {
+
+            } else if (komento.equals(LOGOUT)) {
+
+                kirjautunut = 0;
+                System.out.println(ULOS);
+
+            } else if (komento.equals(LOPETA)) {
+
+                jatkaSuorittamista = false;
+                System.out.println(NAKEMIIN);
+
+            } else {
+                
+                System.out.println(KOMENTOVIRHE);
+            }
 
         } while(jatkaSuorittamista);
 
