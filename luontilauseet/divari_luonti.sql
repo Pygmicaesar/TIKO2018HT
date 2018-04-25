@@ -16,16 +16,12 @@ PRIMARY KEY (isbn));
 
 CREATE TABLE teos_kpl (
 kpl_id INT,
+isbn VARCHAR(50),
 ostohinta DECIMAL(4, 2) NOT NULL,
 paino INT NOT NULL,
 myyntipvm DATE,
 hinta DECIMAL(4, 2) NOT NULL,
 arvo VARCHAR(50) NOT NULL,
-PRIMARY KEY (kpl_id),
-FOREIGN KEY (arvo) REFERENCES divaritieto(arvo));
-
-CREATE TABLE on_teosta (
-isbn VARCHAR(13),
-kpl_id INT,
-FOREIGN KEY (isbn) REFERENCES teos(isbn),
-FOREIGN KEY (kpl_id) REFERENCES teos_kpl(kpl_id));
+PRIMARY KEY (kpl_id, isbn),
+FOREIGN KEY (arvo) REFERENCES divaritieto(arvo),
+FOREIGN KEY (isbn) REFERENCES teos(isbn));
