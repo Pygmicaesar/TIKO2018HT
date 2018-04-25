@@ -97,10 +97,9 @@ public class Tiko2018ht {
             } else if (komento.equals(LOPETA)) {
 
                 jatkaSuorittamista = false;
-                System.out.println(NAKEMIIN);
 
             } else {
-                
+
                 System.out.println(KOMENTOVIRHE);
             }
 
