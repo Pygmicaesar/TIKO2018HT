@@ -17,20 +17,34 @@ public class Tiko2018ht {
      */
     public static void main(String[] args) {
         //Testailua
-        Connection con = connect();
-        rekisteroi(con, "Matti", "asdasd", "asadafdf", "342-2323233", "sipuli");
-        kirjaudu(con, "Atte Asiakas", "asd123");
+        Connection kdCon = kdConnect();
+        rekisteroi(kdCon, "Matti", "asdasd", "asadafdf", "342-2323233", "sipuli");
+        kirjaudu(kdCon, "Atte Asiakas", "asd123");
         System.out.println("Kirjautunut: " + kirjautunut);
-        kirjaudu(con, "Matti", "sipuli");
+        kirjaudu(kdCon, "Matti", "sipuli");
         System.out.println("Kirjautunut: " + kirjautunut);
-        hae(con, "Turms");
-        lisaa(con, "1234567890", "Esimteos1", "Taidejäbä", "romaani", "huumori", 15.99, 280, 21.99);
+        hae(kdCon, "Turms");
+        lisaa(kdCon, "1234567890", "Esimteos1", "Taidejäbä", "romaani", "huumori", 15.99, 280, 21.99);
     }
     
 	//Yhteyden muodostaminen
-    public static Connection connect() {
+    public static Connection kdConnect() {
         Connection con = null;
         String url ="jdbc:postgresql://dbstud2.sis.uta.fi:5432/tiko2018r23?currentSchema=keskusdivari";
+	String tunnus = "jr425042";
+	String salasana = "123456";
+	try {
+            con = DriverManager.getConnection(url, tunnus, salasana);
+	} catch (SQLException e) {
+            System.err.println("Tietokantayhteyden avaus ei onnistu");
+            System.err.println(e.getMessage());
+	}
+	return con;
+    }
+    
+    public static Connection dConnect() {
+        Connection con = null;
+        String url ="jdbc:postgresql://dbstud2.sis.uta.fi:5432/tiko2018r23?currentSchema=divari";
 	String tunnus = "jr425042";
 	String salasana = "123456";
 	try {
