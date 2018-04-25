@@ -17,7 +17,7 @@ public class Nide {
                 String tekija, 
                 String tyyppi, 
                 String luokka, 
-                int kpl_id
+                int kpl_id,
                 double hinta,
                 int paino) throws IllegalArgumentException {
         
@@ -54,7 +54,7 @@ public class Nide {
         if (a != null) {
             isbn = a;
         } else {
-            throw new IllegalArgumentException;
+            throw new IllegalArgumentException();
         }
     }
     
@@ -67,7 +67,7 @@ public class Nide {
         if (a != null) {
             teosNimi = a;
         } else {
-            throw new IllegalArgumentException;
+            throw new IllegalArgumentException();
         }
     }
     
@@ -80,7 +80,7 @@ public class Nide {
         if (a != null) {
             tekija = a;
         } else {
-            throw new IllegalArgumentException;
+            throw new IllegalArgumentException();
         }
     }
     
@@ -93,7 +93,7 @@ public class Nide {
         if (a != null) {
             tyyppi = a;
         } else {
-            throw new IllegalArgumentException;
+            throw new IllegalArgumentException();
         }
     }
     
@@ -106,7 +106,7 @@ public class Nide {
         if (a != null) {
             luokka = a;
         } else {
-            throw new IllegalArgumentException;
+            throw new IllegalArgumentException();
         }
     }
     
@@ -119,7 +119,7 @@ public class Nide {
         if (a > 0) {
             kpl_id = a;
         } else {
-            throw new IllegalArgumentException;
+            throw new IllegalArgumentException();
         }
     }
     
@@ -132,7 +132,7 @@ public class Nide {
         if (a > 0) {
             hinta = a;
         } else {
-            throw new IllegalArgumentException;
+            throw new IllegalArgumentException();
         }
     }
     
@@ -145,8 +145,7 @@ public class Nide {
         if (a > 0) {
             paino = a;
         } else {
-            throw new IllegalArgumentException;
+            throw new IllegalArgumentException();
         }
     }
-    
 }
