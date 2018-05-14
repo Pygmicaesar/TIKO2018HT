@@ -1,3 +1,6 @@
+package tiko2018ht;
+
+
 import java.sql.*;
 import java.util.*;
 
@@ -29,6 +32,7 @@ public class Tiko2018ht {
 
     //Kirjautuneen käyttäjän as_id
     public static int kirjautunut = 0;
+    public static ArrayList<TeosKpl> ostoskori = new ArrayList();
 
     /**
      * @param args the command line arguments
@@ -52,6 +56,8 @@ public class Tiko2018ht {
         System.out.println("|-------------------------------|");
         System.out.println("- - - - - - - - - - - - - - - - -");
 
+        raportti(kdConnect());
+        
         // Tervehditään käyttäjää.
         System.out.println(TERVETULOA);
 
@@ -352,9 +358,9 @@ public class Tiko2018ht {
         return true;
 
     }
-
-    
+ 
     //Ei toimi
+    /*
     public static LinkedList<Nide> hae(Connection con, String hakukohde, String haku) {
         LinkedList<Nide> loytyi = new LinkedList();
         String[] haut = haku.split(" ");
@@ -506,6 +512,7 @@ public class Tiko2018ht {
             System.err.println(VIRHE + e);
         }
     }
+    */
     
     //Palauttaa LinkedList-olion, joka sisältää hakutuloksen Kirja-olioina
     //Toimii
@@ -632,5 +639,93 @@ public class Tiko2018ht {
         } else {
             System.out.println("Ei oikeuksia!");
         }
+    }
+    
+    //En tiedä toimiiko, ei pystynyt testaamaan
+    public static void raportti(Connection con) {
+        //Etsitään luokat
+        ArrayList luokat = new ArrayList();
+        ArrayList<RaporttiNide> raportti = new ArrayList();
+        try {
+            PreparedStatement prstmt = con.prepareStatement("SELECT DISTINCT luokka " +
+                                                            "FROM teos;" + 
+                                                            "ORDER BY luokka;");
+            ResultSet rs = prstmt.executeQuery();
+            while (rs.next()) {
+                luokat.add(rs.getString("luokka"));
+            }
+        } catch (SQLException e) {
+            System.err.println(VIRHE + e);
+        }
+        
+        for (int i = 0; i < luokat.size(); ++i) {
+            try {
+                PreparedStatement prstmt = con.prepareStatement("SELECT teos.teos_nimi, " +
+                                                                "teos.luokka, " +
+                                                                "SUM(teos_kpl.hinta) AS kokonaishinta, " +
+                                                                "ROUND(AVG(teos_kpl.hinta), 2) AS keskihinta" +
+                                                                "FROM teos, teos_kpl " +
+                                                                "WHERE teos.isbn = teos_kpl.isbn AND " +
+                                                                "myyntipvm IS NULL AND " +
+                                                                "teos.luokka = '" + luokat.get(i) + "' " +
+                                                                "ORDER BY teos.teos_nimi" + 
+                                                                "GROUP BY teos.teos_nimi, teos.luokka;");
+                ResultSet rs = prstmt.executeQuery();
+                while (rs.next()) {
+                    raportti.add(new RaporttiNide(rs.getString("teos_nimi"),
+                                                  rs.getString("luokka"),
+                                                  rs.getInt("kokonaishinta"),
+                                                  rs.getInt("keskihinta")));
+                }
+            } catch (SQLException e) {
+                System.err.println(VIRHE + e);
+            }
+        }
+        
+        System.out.println("Teoksen nimi, luokka, luokan teosten kokonaishinta ja luokan teosten keskihinta");
+        for (int i = 0; i < raportti.size(); i++) {
+            System.out.println(raportti.get(i).nimi() + ", " +
+                               raportti.get(i).luokka() + ", " +
+                               raportti.get(i).kokonaishinta() + "€, " +
+                               raportti.get(i).keskihinta() + "€");
+        }
+    }
+    
+    public static void lisaaOstoskoriin(Connection con, int kpl_id, int isbn) {
+        try {
+            PreparedStatement prstmt = con.prepareStatement("SELECT kpl_id, isbn " +
+                                                            "FROM teos_kpl " +
+                                                            "WHERE kpl_id = " + kpl_id + " AND " +
+                                                            "isbn = " + isbn + " AND " + 
+                                                            "myyntipvm IS NULL;");
+            ResultSet rs = prstmt.executeQuery();
+            if (rs.next()) {
+                if (!rs.next()) {
+                    ostoskori.add(new TeosKpl(kpl_id, isbn));
+                } else {
+                    System.err.println("Tietokanta epäjohdonmukainen");
+                }
+            } else {
+                System.err.println("Kirjaa ei löydy!");
+            }
+        } catch (SQLException e) {
+            System.err.println(VIRHE + e);
+        }
+    }
+    
+    public static void tilaa(Connection con) {
+        for (int i = 0; i < ostoskori.size(); i++) {
+            try {
+                PreparedStatement prstmt = con.prepareStatement("UPDATE teos_kpl " +
+                                                                "SET myyntipvm = GETDATE() " +
+                                                                "WHERE kpl_id = " + ostoskori.get(i).kplId + " AND " +
+                                                                "isbn = " + ostoskori.get(i).isbn + ";");
+                if (prstmt.executeUpdate() == 0) {
+                    System.out.println("Tilaus epäonnistui");
+                }
+            } catch (SQLException e) {
+                System.err.println(VIRHE + e);
+            }
+        
     }
 }
