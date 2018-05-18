@@ -726,6 +726,6 @@ public class Tiko2018ht {
             } catch (SQLException e) {
                 System.err.println(VIRHE + e);
             }
-        
+        }
     }
 }
