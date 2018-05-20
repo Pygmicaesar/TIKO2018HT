@@ -29,7 +29,7 @@ tyyppi VARCHAR(50),
 PRIMARY KEY (arvo));
 
 CREATE TABLE teos (
-isbn VARCHAR(13),
+isbn BIGINT NOT NULL,
 teos_nimi VARCHAR(50) NOT NULL,
 tekija VARCHAR(50) NOT NULL,
 tyyppi VARCHAR(50) NOT NULL,
@@ -40,7 +40,7 @@ FOREIGN KEY (arvo) REFERENCES divaritieto(arvo));
 
 CREATE TABLE teos_kpl (
 kpl_id INT,
-isbn VARCHAR(50) NOT NULL,
+isbn BIGINT NOT NULL,
 ostohinta DECIMAL(4, 2) NOT NULL,
 paino INT NOT NULL,
 myyntipvm DATE,
@@ -61,3 +61,13 @@ paino INT,
 PRIMARY KEY (tilaus_id, paino),
 FOREIGN KEY (tilaus_id) REFERENCES tilaus(tilaus_id),
 FOREIGN KEY (paino) REFERENCES postikulut(paino));
+
+CREATE FUNCTION paivita_tkpl_myyntipvm() RETURNS TRIGGER AS $paivita_tkpl_myyntipvm$
+BEGIN
+UPDATE divari.teos_kpl SET myyntipvm = NEW.myyntipvm WHERE isbn = NEW.isbn AND kpl_id = NEW.kpl_id;
+RETURN NEW;
+END;
+
+CREATE TRIGGER paivita_tkpl_myyntipvm
+AFTER UPDATE ON teos_kpl
+FOR EACH ROW EXECUTE PROCEDURE paivita_tkpl_myyntipvm();

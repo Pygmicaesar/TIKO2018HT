@@ -7,7 +7,7 @@ tieto VARCHAR(50) NOT NULL,
 PRIMARY KEY (arvo));
 
 CREATE TABLE teos (
-isbn VARCHAR(13),
+isbn BIGINT NOT NULL,
 teos_nimi VARCHAR(50) NOT NULL,
 tekija VARCHAR(50) NOT NULL,
 tyyppi VARCHAR(50) NOT NULL,
@@ -16,7 +16,7 @@ PRIMARY KEY (isbn));
 
 CREATE TABLE teos_kpl (
 kpl_id INT,
-isbn VARCHAR(50),
+isbn BIGINT NOT NULL,
 ostohinta DECIMAL(4, 2) NOT NULL,
 paino INT NOT NULL,
 myyntipvm DATE,
