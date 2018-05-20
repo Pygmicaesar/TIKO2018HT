@@ -1,6 +1,3 @@
-package tiko2018ht;
-
-
 /**
  *
  * @author Joel
@@ -11,7 +8,7 @@ public class RaporttiNide {
     private double kokonaishinta;
     private double keskihinta;
     
-    public RaporttiNide(String nimi, String luokka, int kokonaishinta, int keskihinta) {
+    public RaporttiNide(String nimi, String luokka, double kokonaishinta, double keskihinta) {
         this.nimi = nimi;
         this.luokka = luokka;
         this.kokonaishinta = kokonaishinta;

@@ -1,6 +1,3 @@
-package tiko2018ht;
-
-
 import java.sql.*;
 import java.util.*;
 
@@ -56,7 +53,9 @@ public class Tiko2018ht {
         System.out.println("|-------------------------------|");
         System.out.println("- - - - - - - - - - - - - - - - -");
 
-        raportti(kdConnect());
+        hae(kdCon, "a", "teos_nimi", "tekija", "tyyppi");
+
+        /*
         
         // Tervehditään käyttäjää.
         System.out.println(TERVETULOA);
@@ -112,12 +111,18 @@ public class Tiko2018ht {
         } while(jatkaSuorittamista);
 
         System.out.println(NAKEMIIN);
+        */
     }
 
     //Yhteyden muodostaminen
     public static Connection kdConnect() {
         Connection con = null;
-        String url ="jdbc:postgresql://dbstud2.sis.uta.fi:5432/tiko2018r23?currentSchema=keskusdivari";
+		try {
+			Class.forName("com.postgresql.jdbc.Driver");
+        } catch (Exception e) {
+			System.err.println("Drivererror: " + e);
+		}
+		String url ="jdbc:postgresql://dbstud2.sis.uta.fi:5432/tiko2018r23?currentSchema=keskusdivari";
         String tunnus = "jr425042";
         String salasana = "123456";
         try {
@@ -358,204 +363,41 @@ public class Tiko2018ht {
         return true;
 
     }
- 
-    //Ei toimi
-    /*
-    public static LinkedList<Nide> hae(Connection con, String hakukohde, String haku) {
-        LinkedList<Nide> loytyi = new LinkedList();
-        String[] haut = haku.split(" ");
-        try {
-            PreparedStatement prstmt = con.prepareStatement("SELECT isbn, teos_nimi, tekija, "+
-                                                            "tyyppi, luokka, kpl_id, hinta, paino, "+
-                                                            "FROM teos INNER JOIN teos_kpl "+
-                                                            "ON teos.isbn = teos_kpl.isbn;");
-            ResultSet rs = prstmt.executeQuery();
-            while (rs.next()) {
-                Nide n = new Nide(null, null, null, null, null, 0, 0.0, 0);
-                boolean noMatches = true;
-                switch (hakukohde) {
-                    case "teos_nimi":
-                        String[] teosnimi = rs.getString("teos_nimi").split(" ");
-                        for (int i = 0; i < haut.length; ++i) {
-                            for (int j = 0; j < teosnimi.length; ++j) {
-                                if (haut[i].equalsIgnoreCase(teosnimi[j])) {
-                                    if (noMatches) {
-                                        noMatches = false;
-                                        n.isbn(rs.getString("isbn"));
-                                        n.teosNimi(rs.getString("teos_nimi"));
-                                        n.tekija(rs.getString("tekija"));
-                                        n.tyyppi(rs.getString("tyyppi"));
-                                        n.luokka(rs.getString("luokka"));
-                                        n.kpl_id(rs.getInt("kpl_id"));
-                                        n.hinta(rs.getDouble("hinta"));
-                                    }
-                                    ++n.osumia;                                    
-                                } else {
-                                    if (noMatches && rs.getString("teos_nimi").contains(haut[i])) {
-                                        n.isbn(rs.getString("isbn"));
-                                        n.teosNimi(rs.getString("teos_nimi"));
-                                        n.tekija(rs.getString("tekija"));
-                                        n.tyyppi(rs.getString("tyyppi"));
-                                        n.luokka(rs.getString("luokka"));
-                                        n.kpl_id(rs.getInt("kpl_id"));
-                                        n.hinta(rs.getDouble("hinta"));
-                                        ++n.osumia;
-                                    }
-                                }
-                            }
-                        }
-                        break;
-                    case "tekija":
-                        String[] tekija = rs.getString("tekija").split(" ");
-                        for (int i = 0; i < haut.length; ++i) {
-                            for (int j = 0; j < tekija.length; ++j) {
-                                if (haut[i].equalsIgnoreCase(tekija[j])) {
-                                    if (noMatches) {
-                                        noMatches = false;
-                                        n.isbn(rs.getString("isbn"));
-                                        n.teosNimi(rs.getString("teos_nimi"));
-                                        n.tekija(rs.getString("tekija"));
-                                        n.tyyppi(rs.getString("tyyppi"));
-                                        n.luokka(rs.getString("luokka"));
-                                        n.kpl_id(rs.getInt("kpl_id"));
-                                        n.hinta(rs.getDouble("hinta"));
-                                    }
-                                    ++n.osumia;                                    
-                                } else {
-                                    if (noMatches && rs.getString("tekija").contains(haut[i])) {
-                                        n.isbn(rs.getString("isbn"));
-                                        n.teosNimi(rs.getString("teos_nimi"));
-                                        n.tekija(rs.getString("tekija"));
-                                        n.tyyppi(rs.getString("tyyppi"));
-                                        n.luokka(rs.getString("luokka"));
-                                        n.kpl_id(rs.getInt("kpl_id"));
-                                        n.hinta(rs.getDouble("hinta"));
-                                        ++n.osumia;
-                                    }
-                                }
-                            }
-                        }
-                        break;
-                    case "tyyppi":
-                        String[] tyyppi = rs.getString("tyyppi").split(" ");
-                        for (int i = 0; i < haut.length; ++i) {
-                            for (int j = 0; j < tyyppi.length; ++j) {
-                                if (haut[i].equalsIgnoreCase(tyyppi[j])) {
-                                    if (noMatches) {
-                                        noMatches = false;
-                                        n.isbn(rs.getString("isbn"));
-                                        n.teosNimi(rs.getString("teos_nimi"));
-                                        n.tekija(rs.getString("tekija"));
-                                        n.tyyppi(rs.getString("tyyppi"));
-                                        n.luokka(rs.getString("luokka"));
-                                        n.kpl_id(rs.getInt("kpl_id"));
-                                        n.hinta(rs.getDouble("hinta"));
-                                    }
-                                    ++n.osumia;                                    
-                                } else {
-                                    if (noMatches && rs.getString("tyyppi").contains(haut[i])) {
-                                        n.isbn(rs.getString("isbn"));
-                                        n.teosNimi(rs.getString("teos_nimi"));
-                                        n.tekija(rs.getString("tekija"));
-                                        n.tyyppi(rs.getString("tyyppi"));
-                                        n.luokka(rs.getString("luokka"));
-                                        n.kpl_id(rs.getInt("kpl_id"));
-                                        n.hinta(rs.getDouble("hinta"));
-                                        ++n.osumia;
-                                    }
-                                }
-                            }
-                        }
-                        break;
-                        
-                    case "luokka":
-                        String[] luokka = rs.getString("luokka").split(" ");
-                        for (int i = 0; i < haut.length; ++i) {
-                            for (int j = 0; j < luokka.length; ++j) {
-                                if (haut[i].equalsIgnoreCase(luokka[j])) {
-                                    if (noMatches) {
-                                        noMatches = false;
-                                        n.isbn(rs.getString("isbn"));
-                                        n.teosNimi(rs.getString("teos_nimi"));
-                                        n.tekija(rs.getString("tekija"));
-                                        n.tyyppi(rs.getString("tyyppi"));
-                                        n.luokka(rs.getString("luokka"));
-                                        n.kpl_id(rs.getInt("kpl_id"));
-                                        n.hinta(rs.getDouble("hinta"));
-                                    }
-                                    ++n.osumia;                                    
-                                } else {
-                                    if (noMatches && rs.getString("luokka").contains(haut[i])) {
-                                        n.isbn(rs.getString("isbn"));
-                                        n.teosNimi(rs.getString("teos_nimi"));
-                                        n.tekija(rs.getString("tekija"));
-                                        n.tyyppi(rs.getString("tyyppi"));
-                                        n.luokka(rs.getString("luokka"));
-                                        n.kpl_id(rs.getInt("kpl_id"));
-                                        n.hinta(rs.getDouble("hinta"));
-                                        ++n.osumia;
-                                    }
-                                }
-                            }
-                        }
-                        break;
-                    default:
-                        System.out.println("Virheellinen hakukohde!");
-                        break;
-                }
-                if (n.isbn() != null) {
-                    loytyi.add(n);
-                }
-            }
-            
-        } catch (SQLException e) {
-            System.err.println(VIRHE + e);
-        }
-    }
-    */
     
-    //Palauttaa LinkedList-olion, joka sisältää hakutuloksen Kirja-olioina
     //Toimii
-    public static LinkedList<Nide> hae(Connection con, String haku) {
-        LinkedList<Nide> loytyi = new LinkedList();
+    public static void hae(Connection con, String haku, String...hakukohde) {
+        LinkedList tulos = new LinkedList<Nide>();
         Nide n = null;
-        try {
-            PreparedStatement prstmt = con.prepareStatement("SELECT isbn, teos_nimi, tekija, "+
-                    "tyyppi, luokka, kpl_id, hinta, paino, "+
-                    "FROM teos INNER JOIN teos_kpl "+
-                    "ON teos.isbn = teos_kpl.isbn;");
-            ResultSet rs = prstmt.executeQuery();
-            while (rs.next()) {
-                if (rs.getString("teos_nimi").contains(haku)) {
-                    n = new Nide(rs.getString("isbn"), rs.getString("teos_nimi"),
+        if (hakukohde.length != 0) {
+            try {
+                for (int i = 0; i < hakukohde.length; i++) {
+                    PreparedStatement prstmt = con.prepareStatement("SELECT teos.isbn, teos_nimi, tekija, " +
+                                                                    "tyyppi, luokka, kpl_id, hinta, paino " +
+                                                                    "FROM teos INNER JOIN teos_kpl " +
+                                                                    "ON teos.isbn = teos_kpl.isbn;");
+                    ResultSet rs = prstmt.executeQuery();
+                    while (rs.next()) {
+                        if (rs.getString(hakukohde[i]).contains(haku)) {
+                            n = new Nide(rs.getString("isbn"), rs.getString("teos_nimi"),
                             rs.getString("tekija"), rs.getString("tyyppi"),
                             rs.getString("luokka"), rs.getInt("kpl_id"),
                             rs.getDouble("hinta"), rs.getInt("paino"));
-                } else if (rs.getString("tekija").contains(haku)) {
-                    n = new Nide(rs.getString("isbn"), rs.getString("teos_nimi"),
-                            rs.getString("tekija"), rs.getString("tyyppi"),
-                            rs.getString("luokka"), rs.getInt("kpl_id"),
-                            rs.getDouble("hinta"), rs.getInt("paino"));
-                } else if (rs.getString("tyyppi").contains(haku)) {
-                    n = new Nide(rs.getString("isbn"), rs.getString("teos_nimi"),
-                            rs.getString("tekija"), rs.getString("tyyppi"),
-                            rs.getString("luokka"), rs.getInt("kpl_id"),
-                            rs.getDouble("hinta"), rs.getInt("paino"));
-                } else if (rs.getString("luokka").contains(haku)) {
-                    n = new Nide(rs.getString("isbn"), rs.getString("teos_nimi"),
-                            rs.getString("tekija"), rs.getString("tyyppi"),
-                            rs.getString("luokka"), rs.getInt("kpl_id"),
-                            rs.getDouble("hinta"), rs.getInt("paino"));
-                }
+                        }
 
-                if (n != null) {
-                    loytyi.add(n);
+                        if (n != null && !(tulos.contains(n))) {
+                            tulos.add(n);
+                        }
+                    }
                 }
+                for (int i = 0; i < tulos.size(); i++) {
+                    System.out.println(tulos.get(i).toString());
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            System.out.println(VIRHE + e);
+        } else {
+            System.out.println("Anna jokin hakukohde!");
         }
-        return loytyi;
     }
 
     private static boolean onkoOlemassa(Connection con, String teos_nimi, String tekija) {
@@ -641,14 +483,14 @@ public class Tiko2018ht {
         }
     }
     
-    //En tiedä toimiiko, ei pystynyt testaamaan
+    //Toimii, ei tosin kauhean elegantti printtaus :D
     public static void raportti(Connection con) {
         //Etsitään luokat
         ArrayList luokat = new ArrayList();
         ArrayList<RaporttiNide> raportti = new ArrayList();
         try {
             PreparedStatement prstmt = con.prepareStatement("SELECT DISTINCT luokka " +
-                                                            "FROM teos;" + 
+                                                            "FROM teos " + 
                                                             "ORDER BY luokka;");
             ResultSet rs = prstmt.executeQuery();
             while (rs.next()) {
@@ -656,29 +498,32 @@ public class Tiko2018ht {
             }
         } catch (SQLException e) {
             System.err.println(VIRHE + e);
+            e.printStackTrace();
         }
         
+        //Muodostetaan luokka kerrallaan tiedot,
         for (int i = 0; i < luokat.size(); ++i) {
             try {
                 PreparedStatement prstmt = con.prepareStatement("SELECT teos.teos_nimi, " +
                                                                 "teos.luokka, " +
                                                                 "SUM(teos_kpl.hinta) AS kokonaishinta, " +
-                                                                "ROUND(AVG(teos_kpl.hinta), 2) AS keskihinta" +
+                                                                "TRUNC(AVG(teos_kpl.hinta), 2) AS keskihinta " +
                                                                 "FROM teos, teos_kpl " +
                                                                 "WHERE teos.isbn = teos_kpl.isbn AND " +
                                                                 "myyntipvm IS NULL AND " +
                                                                 "teos.luokka = '" + luokat.get(i) + "' " +
-                                                                "ORDER BY teos.teos_nimi" + 
-                                                                "GROUP BY teos.teos_nimi, teos.luokka;");
+                                                                "GROUP BY teos.teos_nimi, teos.luokka " +
+                                                                "ORDER BY teos.teos_nimi;");
                 ResultSet rs = prstmt.executeQuery();
                 while (rs.next()) {
                     raportti.add(new RaporttiNide(rs.getString("teos_nimi"),
                                                   rs.getString("luokka"),
-                                                  rs.getInt("kokonaishinta"),
-                                                  rs.getInt("keskihinta")));
+                                                  rs.getDouble("kokonaishinta"),
+                                                  rs.getDouble("keskihinta")));
                 }
             } catch (SQLException e) {
                 System.err.println(VIRHE + e);
+                e.printStackTrace();
             }
         }
         

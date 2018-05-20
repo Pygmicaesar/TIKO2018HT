@@ -1,5 +1,4 @@
-package tiko2018ht;
-
+import java.util.Comparator;
 
 /**
  *
@@ -48,12 +47,43 @@ public class Nide {
         }
     }
     
+    @Override
+    public String toString() {
+        final String D = ", ";
+        return new String(isbn + D +teosNimi + D + kpl_id + D + tekija + D + tyyppi + D + luokka + D + hinta + D + paino);
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof Nide)) {
+            return false;
+        }
+
+        Nide n = (Nide)o;
+
+        if (this.isbn.equals(n.isbn()) &&
+            this.teosNimi.equals(n.teosNimi()) &&
+            this.hinta == n.hinta() &&
+            this.kpl_id == n.kpl_id() &&
+            this.luokka.equals(n.luokka()) &&
+            this.paino == n.paino() &&
+            this.tekija.equals(n.tekija()) &&
+            this.tyyppi.equals(n.tyyppi())) {
+                return true;
+            } else {
+                return false;
+            }
+    }
+
     public String isbn() {
         return isbn;
     }
     
     public void isbn(String a) throws IllegalArgumentException {
-        
+
         if (a != null) {
             isbn = a;
         } else {
