@@ -34,9 +34,6 @@ public class Tiko2018ht {
     public static int kirjautunut = 0;
     public static ArrayList<TeosKpl> ostoskori = new ArrayList();
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
@@ -79,15 +76,16 @@ public class Tiko2018ht {
             boolean loggedIn = true;
 
             //Admintila
-            if (kirjautunut == 1 || kirjautunut == 2) {
+            if (kirjautunut  < 3) {
                 Connection con = kdCon;
                 //Vaihdetaan divari-yhteyteteen mikäli käyttäjänä on divarin admin
                 if (kirjautunut == 1) {
                     con = dCon;
                 }
 
+                //Pyydetään syöte
                 System.out.println(SYOTAKOMENTO);
-                System.out.println("OHJE: apua, hae, listaa, lisäätuote, poistakpl, poistatuote, logout");
+                System.out.println("OHJE: apua, hae, listaa, lisäätuote, poistakpl, poistatuote, logout, lopeta");
                 while (loggedIn) {
                     String komento = sc.nextLine();
                     boolean syoteOk = false;
@@ -108,21 +106,23 @@ public class Tiko2018ht {
                                 }
 
                                 //Tarkistetaan että annetut hakukohteet ovat "laillisia"
-                                String[] kohteet = {"teos_nimi", "tekija", "tyyppi", "luokka"};
-                                boolean ok = false;
-                                for (int i = 0; i < hakutermit.size(); ++i) {
-                                    for (int j = 0; j < kohteet.length; ++j)  {
-                                        if (hakutermit.get(i).equals(kohteet[j])) {
-                                            ok = true;
-                                            syoteOk = true;
-                                        }
-                                    }
-                                    if (!ok) {
-                                        throw new Exception();
+                                if (hakutermit.size() > 4) {
+                                    throw new Exception();
+                                } else {
+                                    for (int i = 0; i < hakutermit.size(); ++i) {
+                                        if (!hakutermit.get(i).equals("teos_nimi") &&
+                                            !hakutermit.get(i).equals("tekija") &&
+                                            !hakutermit.get(i).equals("tyyppi") &&
+                                            !hakutermit.get(i).equals("luokka")) {
+                                                throw new Exception();
+                                            } else {
+                                                syoteOk = true;
+                                            }
                                     }
                                 }
                             } catch (Exception e) {
                                 System.out.println("Virheellinen syöte!");
+                                hakutermit = new ArrayList<String>();
                             }
                         }
                         hae(con, haku, (String[])hakutermit.toArray(new String[hakutermit.size()]));
@@ -169,10 +169,10 @@ public class Tiko2018ht {
                                     }
                             } catch (Exception e) {
                                 System.out.println("Virheellinen syöte!");
+                                sc.nextLine();
                             }
                         }
-                        lisaa(con, isbn, teos_nimi, tekija, tyyppi, luokka, ostohinta, paino, hinta, kirjautunut);
-                    
+                        lisaa(con, isbn, teos_nimi, tekija, tyyppi, luokka, ostohinta, paino, hinta);
                     
                     } else if (komento.equals("poistatuote")) {
                         System.out.println("Anna poistettavan teoksen nimi");
@@ -181,16 +181,32 @@ public class Tiko2018ht {
                         String tekija = sc.nextLine();
                         poistaTuote(con, teos_nimi, tekija);
                     } else if (komento.equals("poistakpl")) {
-                        System.out.println("Anna poistettavan kappaleen kappale-ID");
-                        int kpl_id = sc.nextInt();
-                        sc.nextLine();
-                        System.out.println("Anna poistettavan kappaleen ISBN");
-                        long isbn = sc.nextLong();
-                        sc.nextLine();
-                        poistaKpl(con, kpl_id, isbn);
-                    } else if (komento.equals("logout")) {
-
+                        try {
+                            boolean ok = false;
+                            while (!ok) {
+                                System.out.println("Anna poistettavan kappaleen kappale-ID");
+                                int kpl_id = sc.nextInt();
+                                sc.nextLine();
+                                System.out.println("Anna poistettavan kappaleen ISBN");
+                                long isbn = sc.nextLong();
+                                sc.nextLine();
+                                poistaKpl(con, kpl_id, isbn);
+                                ok = true;
+                            }
+                        } catch (Exception e) {
+                            System.out.println("Virheellinen syöte!");
+                        }
+                    } else if (komento.equals("paivitakd")) {
+                        if (kirjautunut != 2) {
+                            
+                        } else {
+                            System.out.println("Tämä toiminto on yksittäisten divarien ylläpitäjille");
+                        }
+                    } else if (komento.equals(LOGOUT)) {
+                        kirjautunut = 0;
+                        loggedIn = false;
                     } else if (komento.equals(LOPETA)) {
+                        loggedIn = false;
                         jatkaSuorittamista = false;
                     } else {
                         System.out.println(KOMENTOVIRHE);
@@ -201,7 +217,7 @@ public class Tiko2018ht {
                 //Käyttäjätila
                 
                 System.out.println(SYOTAKOMENTO);
-                System.out.println("OHJE: apua, hae, listaa, lisää, poista, ostoskori, tilaa, logout");
+                System.out.println("OHJE: apua, hae, listaa, lisää, poista, ostoskori, tilaa, logout, lopeta");
                 while (loggedIn) {
                     String komento = sc.nextLine();
                     if (komento.equals("apua")) {
@@ -222,17 +238,18 @@ public class Tiko2018ht {
                                 }
 
                                 //Tarkistetaan että annetut hakukohteet ovat "laillisia"
-                                String[] kohteet = {"teos_nimi", "tekija", "tyyppi", "luokka"};
-                                boolean ok = false;
-                                for (int i = 0; i < hakutermit.size(); ++i) {
-                                    for (int j = 0; j < kohteet.length; ++j)  {
-                                        if (hakutermit.get(i).equals(kohteet[j])) {
-                                            ok = true;
-                                            syoteOk = true;
-                                        }
-                                    }
-                                    if (!ok) {
-                                        throw new Exception();
+                                if (hakutermit.size() > 4) {
+                                    throw new Exception();
+                                } else {
+                                    for (int i = 0; i < hakutermit.size(); ++i) {
+                                        if (!hakutermit.get(i).equals("teos_nimi") &&
+                                            !hakutermit.get(i).equals("tekija") &&
+                                            !hakutermit.get(i).equals("tyyppi") &&
+                                            !hakutermit.get(i).equals("luokka")) {
+                                                throw new Exception();
+                                            } else {
+                                                syoteOk = true;
+                                            }
                                     }
                                 }
                             } catch (Exception e) {
@@ -243,16 +260,47 @@ public class Tiko2018ht {
                     } else if (komento.equals("listaa")) {
                         raportti(kdCon);
                     } else if (komento.startsWith(LISAA)) {
-
+                        try {
+                            boolean ok = false;
+                            while (!ok) {
+                                System.out.println("Anna tuotteen kappale-ID (Saat sen hakutoiminnolla)");
+                                int kpl_id = sc.nextInt();
+                                sc.nextLine();
+                                System.out.println("Anna tuotteen ISBN");
+                                long isbn = sc.nextLong();
+                                sc.nextLine();
+                                lisaaOstoskoriin(kdCon, kpl_id, isbn);
+                                ok = true;
+                            } 
+                        } catch (Exception e) {
+                           System.out.println("Väärä tietotyyppi!");
+                        }
                     } else if (komento.startsWith(POISTA)) {
-
+                        try {
+                            boolean ok = false;
+                            while (!ok) {
+                                System.out.println("Anna poistettavan tuotteen kappale-ID");
+                                int kpl_id = sc.nextInt();
+                                sc.nextLine();
+                                System.out.println("Anna poistettavan tuotteen ISBN");
+                                long isbn = sc.nextLong();
+                                sc.nextLine();
+                                poistaOstoskorista(kdCon, kpl_id, isbn);
+                                ok = true;
+                            }
+                        } catch (Exception e) {
+                            System.out.println("Väärä tietotyyppi!");
+                        }
                     } else if (komento.equals(OSTOSKORI)) {
-
+                        ostoskori(kdCon);
                     } else if (komento.equals(LOGOUT)) {
-
                         kirjautunut = 0;
+                        loggedIn = false;
                         System.out.println(ULOS);
+                    } else if (komento.equals("tilaa")) {
+                        tilaa(kdCon);
                     } else if (komento.equals(LOPETA)) {
+                        loggedIn = false;
                         jatkaSuorittamista = false;
                     } else {
                         System.out.println(KOMENTOVIRHE);
@@ -272,6 +320,7 @@ public class Tiko2018ht {
         System.out.println("lisäätuote - lisää uusi tuote tai kappale divarin valikoimaan");
         System.out.println("poistatuote - poistaa tuotteen kappaleen divarista");
         System.out.println("logout - kirjaudu ulos");
+        System.out.println("lopeta - lopeta ohjelma");
     }
 
     //Tulostaa ohjestuksen verkkokaupan käyttöön
@@ -284,16 +333,12 @@ public class Tiko2018ht {
         System.out.println("ostoskori - näyttää ostoskorin sisällön");
         System.out.println("tilaa - lähettää tilauksen");
         System.out.println("logout - kirjaudu ulos");
+        System.out.println("lopeta - lopeta ohjelma");
     }
 
-    //Yhteyden muodostaminen
+    //Yhteyden muodostaminen keskusdivariin
     public static Connection kdConnect() {
         Connection con = null;
-		try {
-			Class.forName("com.postgresql.jdbc.Driver");
-        } catch (Exception e) {
-			System.err.println("Drivererror: " + e);
-		}
 		String url ="jdbc:postgresql://dbstud2.sis.uta.fi:5432/tiko2018r23?currentSchema=keskusdivari";
         String tunnus = "jr425042";
         String salasana = "123456";
@@ -306,6 +351,7 @@ public class Tiko2018ht {
         return con;
     }
 
+    //Yhteyden muodostaminen divariin
     public static Connection dConnect() {
         Connection con = null;
         String url ="jdbc:postgresql://dbstud2.sis.uta.fi:5432/tiko2018r23?currentSchema=divari";
@@ -319,7 +365,6 @@ public class Tiko2018ht {
         }
         return con;
     }
-
     
     public static boolean rekisteroi(Connection con) {
 
@@ -541,12 +586,13 @@ public class Tiko2018ht {
         Nide n = null;
         if (hakukohde.length != 0) {
             try {
-                //Haetaan jokaisesta hakukohteesta
+                //Haetaan jokaisesta hakukohteesta kerrallaan
                 for (int i = 0; i < hakukohde.length; i++) {
                     PreparedStatement prstmt = con.prepareStatement("SELECT teos.isbn, teos_nimi, tekija, " +
                                                                     "tyyppi, luokka, kpl_id, hinta, paino " +
                                                                     "FROM teos INNER JOIN teos_kpl " +
-                                                                    "ON teos.isbn = teos_kpl.isbn;");
+                                                                    "ON teos.isbn = teos_kpl.isbn " +
+                                                                    "WHERE myyntipvm IS NULL;");
                     ResultSet rs = prstmt.executeQuery();
                     while (rs.next()) {
                         if (rs.getString(hakukohde[i]).contains(haku)) {
@@ -561,9 +607,11 @@ public class Tiko2018ht {
                         }
                     }
                 }
-                System.out.println("Kappaleen ID, ISBN, teoksen nimi, tekijä, tyyppi, luokka, hinta, ja paino:");
-                for (int i = 0; i < tulos.size(); i++) {
-                    System.out.println(tulos.get(i).toString());
+                if (!tulos.isEmpty()) {
+                    System.out.println("Kappaleen ID, ISBN, teoksen nimi, tekijä, tyyppi, luokka, hinta, ja paino:");
+                    for (int i = 0; i < tulos.size(); i++) {
+                        System.out.println(tulos.get(i).toString());
+                    }
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -573,7 +621,8 @@ public class Tiko2018ht {
         }
     }
 
-    private static boolean onkoOlemassa(Connection con, String teos_nimi, String tekija) {
+    //Kertoo, löytyykö teos tietokannasta
+    public static boolean onkoOlemassa(Connection con, String teos_nimi, String tekija) {
         boolean retVal = false;
         try {
             PreparedStatement prstmt = con.prepareStatement("SELECT teos_nimi, tekija "+
@@ -591,7 +640,8 @@ public class Tiko2018ht {
         return retVal;
     }
 
-    private static boolean onkoKplOlemassa(Connection con, int kpl_id, long isbn) {
+    //Kertoo, löytyykö kyseinen kappale tietokannasta
+    public static boolean onkoKplOlemassa(Connection con, int kpl_id, long isbn) {
         boolean retVal = false;
         try {
             PreparedStatement prstmt = con.prepareStatement("SELECT * FROM teos_kpl " +
@@ -610,6 +660,7 @@ public class Tiko2018ht {
         return retVal;
     }
 
+    //Poistaa kyseisen kappaleen tietokannasta
     public static void poistaKpl (Connection con, int kpl_id, long isbn) {
         if (kirjautunut < 3) {
             if (onkoKplOlemassa(con, kpl_id, isbn)) {
@@ -634,6 +685,7 @@ public class Tiko2018ht {
         }
     }
 
+    //Poistaa teoksen tietokannasta
     public static void poistaTuote (Connection con, String teos_nimi, String tekija) {
         if (kirjautunut < 3) {
             if (onkoOlemassa(con, teos_nimi, tekija)) {
@@ -647,14 +699,23 @@ public class Tiko2018ht {
                     ResultSet rs = prstmt.executeQuery();
                     prstmt = con.prepareStatement("SELECT MAX(kpl_id) FROM teos_kpl " +
                                                   "WHERE isbn = ?;");
+                    prstmt.clearParameters();
+                    if (rs.next()) {
+                        prstmt.setLong(1, rs.getLong(1));
+                    } else {
+                        throw new SQLException();
+                    }
                     ResultSet rs2 = prstmt.executeQuery();
                     rs2.next();
-                    while (rs.next()) {
+                    do {
                         poistaKpl(con, rs2.getInt("max"), rs.getLong(1));
-                    }
+                    } while (rs.next());
                     prstmt = con.prepareStatement("DELETE FROM teos " +
                                                   "WHERE teos_nimi = ? AND " +
                                                   "tekija = ?;");
+                    prstmt.clearParameters();
+                    prstmt.setString(1, teos_nimi);
+                    prstmt.setString(2, tekija);
                     if (prstmt.executeUpdate() != 0) {
                         System.out.println("Poistettu");
                     } else {
@@ -662,6 +723,7 @@ public class Tiko2018ht {
                     }
                 } catch (SQLException e) {
                     System.out.println("Poisto ei onnistu!");
+                    e.printStackTrace();
                 }
             } else {
                 System.out.println("Teosta ei löydy!");
@@ -671,12 +733,13 @@ public class Tiko2018ht {
         }
     }
 
-    //divari-arvo 1: divarin ylläpitäjä
+    //divari-arvo 1: divarin 1 ylläpitäjä
     //divari-arvo 2: keskusdivarin ylläpitäjä
+    //divari-arvo 3: divarin 3 ylläpitäjä
     public static void lisaa(Connection con, long isbn, String teos_nimi, String tekija,
                              String tyyppi, String luokka, double ostohinta, int paino,
-                             double hinta, int d_id) {
-        if (kirjautunut < 3) {
+                             double hinta) {
+        if (kirjautunut < 4) {
             //Mikäli teos on jo olemassa, lisätään uusi kpl
             if (onkoOlemassa(con, teos_nimi, tekija)) {
                 int kpl_id = 0;
@@ -743,10 +806,10 @@ public class Tiko2018ht {
         }
     }
     
-    //Toimii
+    //Palauttaa tiedon myynnissä olevista teoksista ja niiden luokkien kokonais- sekä keskihinnat
     public static void raportti(Connection con) {
         //Etsitään luokat
-        ArrayList luokat = new ArrayList();
+        ArrayList luokat = new ArrayList<String>();
         ArrayList<RaporttiNide> raportti = new ArrayList();
         try {
             PreparedStatement prstmt = con.prepareStatement("SELECT DISTINCT luokka " +
@@ -764,20 +827,30 @@ public class Tiko2018ht {
         //Muodostetaan luokka kerrallaan tiedot,
         for (int i = 0; i < luokat.size(); ++i) {
             try {
-                PreparedStatement prstmt = con.prepareStatement("SELECT teos.teos_nimi, " +
-                                                                "teos.luokka, " +
-                                                                "SUM(teos_kpl.hinta) AS kokonaishinta, " +
+                PreparedStatement prstmt = con.prepareStatement("SELECT SUM(teos_kpl.hinta) AS kokonaishinta, " +
                                                                 "TRUNC(AVG(teos_kpl.hinta), 2) AS keskihinta " +
                                                                 "FROM teos, teos_kpl " +
-                                                                "WHERE teos.isbn = teos_kpl.isbn AND " +
-                                                                "myyntipvm IS NULL AND " +
-                                                                "teos.luokka = '" + luokat.get(i) + "' " +
-                                                                "GROUP BY teos.teos_nimi, teos.luokka " +
-                                                                "ORDER BY teos.teos_nimi;");
-                ResultSet rs = prstmt.executeQuery();
-                while (rs.next()) {
-                    raportti.add(new RaporttiNide(rs.getString("teos_nimi"),
-                                                  rs.getString("luokka"),
+                                                                "WHERE luokka = ? AND " +
+                                                                "teos_kpl.isbn = teos.isbn AND " +
+                                                                "myyntipvm IS NULL;");
+                prstmt.clearParameters();
+                prstmt.setString(1, (String)luokat.get(i));
+                ResultSet rs = prstmt.executeQuery();               
+                
+                prstmt = con.prepareStatement("SELECT teos.teos_nimi, " +
+                                              "teos.luokka " +
+                                              "FROM teos, teos_kpl " +
+                                              "WHERE teos.isbn = teos_kpl.isbn AND " +
+                                              "myyntipvm IS NULL AND " +
+                                              "teos.luokka = ? " +
+                                              "ORDER BY teos.teos_nimi;");
+                prstmt.clearParameters();
+                prstmt.setString(1, (String)luokat.get(i));
+                ResultSet rs2 = prstmt.executeQuery();
+                rs.next();
+                while (rs2.next()) {
+                    raportti.add(new RaporttiNide(rs2.getString("teos_nimi"),
+                                                  rs2.getString("luokka"),
                                                   rs.getDouble("kokonaishinta"),
                                                   rs.getDouble("keskihinta")));
                 }
@@ -786,22 +859,25 @@ public class Tiko2018ht {
                 e.printStackTrace();
             }
         }
-        
-        System.out.println("Teoksen nimi, luokka, luokan teosten kokonaishinta ja luokan teosten keskihinta");
-        for (int i = 0; i < raportti.size(); i++) {
-            System.out.println(raportti.get(i).nimi() + ", " +
-                               raportti.get(i).luokka() + ", " +
-                               raportti.get(i).kokonaishinta() + "€, " +
-                               raportti.get(i).keskihinta() + "€");
+        if (!raportti.isEmpty()) {
+            System.out.println("Teoksen nimi, luokka, luokan teosten kokonaishinta ja luokan teosten keskihinta");
+            for (int i = 0; i < raportti.size(); i++) {
+                System.out.println(raportti.get(i).nimi() + ", " +
+                                   raportti.get(i).luokka() + ", " +
+                                   raportti.get(i).kokonaishinta() + "€, " +
+                                   raportti.get(i).keskihinta() + "€");
+            }
         }
     }
     
+    //Lisää myyntikappaleen ostoskoriin
     public static void lisaaOstoskoriin(Connection con, int kpl_id, long isbn) {
         try {
             PreparedStatement prstmt = con.prepareStatement("SELECT kpl_id, isbn " +
                                                             "FROM teos_kpl " +
                                                             "WHERE kpl_id = ? AND " +
-                                                            "isbn = ?;");
+                                                            "isbn = ? AND " +
+                                                            "myyntipvm IS NULL;");
             prstmt.clearParameters();
             prstmt.setInt(1, kpl_id);
             prstmt.setLong(2, isbn);
@@ -809,6 +885,7 @@ public class Tiko2018ht {
             if (rs.next()) {
                 if (!rs.next()) {
                     ostoskori.add(new TeosKpl(kpl_id, isbn));
+                    System.out.println("Lisätty ostoskoriin!");
                 } else {
                     System.err.println("Tietokanta epäjohdonmukainen");
                 }
@@ -816,10 +893,58 @@ public class Tiko2018ht {
                 System.err.println("Kirjaa ei löydy!");
             }
         } catch (SQLException e) {
-            System.err.println(VIRHE + e);
+            System.err.println("Teos on jo myyty!");
         }
     }
     
+    //Tulostaa ostoskorin sisällön
+    public static void ostoskori(Connection con) {
+        if (ostoskori.isEmpty()) {
+            System.out.println("Ostoskori on tyhjä!");
+        } else {
+            System.out.println("Kappale-ID, ISBN, Teoksen nimi, Tekijä, Paino, Hinta");
+            final String D = ", ";
+            for (int i = 0; i < ostoskori.size(); ++i) {
+                try {
+                    PreparedStatement prstmt = con.prepareStatement("SELECT kpl_id," +
+                                                                    "teos_kpl.isbn," +
+                                                                    "teos_nimi, tekija,"+
+                                                                    "paino, hinta " +
+                                                                    "FROM teos INNER JOIN teos_kpl " +
+                                                                    "ON teos.isbn = teos_kpl.isbn " +
+                                                                    "WHERE kpl_id = ? AND " +
+                                                                    "teos.isbn = ?;");
+                    prstmt.clearParameters();
+                    prstmt.setInt(1, ostoskori.get(i).kplId);
+                    prstmt.setLong(2, ostoskori.get(i).isbn);
+                    ResultSet rs = prstmt.executeQuery();
+                    while (rs.next()) {
+                        System.out.println(rs.getInt("kpl_id") + D +
+                                           rs.getLong(2) + D +
+                                           rs.getString("teos_nimi") + D +
+                                           rs.getString("tekija") + D +
+                                           rs.getInt("paino") + "g" + D +
+                                           rs.getDouble("hinta") + "€");
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    
+    //Poistaa myyntikappaleen ostoskorista
+    public static void poistaOstoskorista(Connection con, int kpl_id, long isbn) {
+        for (int i = 0; i < ostoskori.size(); ++i) {
+            if (ostoskori.get(i).kplId == kpl_id &&
+                ostoskori.get(i).isbn == isbn) {
+                ostoskori.remove(i);
+                System.out.println("Poistettu");
+            }
+        }
+    }
+    
+    //Merkitsee tuotteen tilatuksi ja kirjaa uuden tilauksen
     public static void tilaa(Connection con) {
         java.util.Date d = new Date();
         java.sql.Date sqlD = new java.sql.Date(d.getTime());
@@ -840,9 +965,7 @@ public class Tiko2018ht {
                 prstmt.setInt(1, tilaus_id);
                 prstmt.setDate(2, sqlD);
                 prstmt.setInt(3, kirjautunut);
-                if (!prstmt.execute()) {
-                    System.out.println("Tilaus epäonnistui");
-                }
+                prstmt.execute();
 
                 //Lisätään myyntipäivämäärä ja tilaus_id myyntikappaleeseen
                 prstmt = con.prepareStatement("UPDATE teos_kpl " +
@@ -856,7 +979,11 @@ public class Tiko2018ht {
                 prstmt.setInt(3, ostoskori.get(i).kplId);
                 prstmt.setLong(4, ostoskori.get(i).isbn);
                 if (prstmt.executeUpdate() == 0) {
+                     
                     System.out.println("Tilaus epäonnistui");
+                } else {
+                    System.out.println("Tilaus lähetetty!");
+                    ostoskori = new ArrayList<TeosKpl>();
                 }
             } catch (SQLException e) {
                 System.err.println(VIRHE + e);
