@@ -22,10 +22,15 @@ public class Tiko2018ht {
     // Command recognised by the program.
     public static final String KIRJAUDU = "k";
     public static final String REKISTEROIDY = "r";
+    public static final String APUA = "apua";
     public static final String HAE = "hae";
+    public static final String LISTAA = "listaa";
+    public static final String LISAATUOTE = "lisäätuote";
     public static final String LISAA = "lisää";
+    public static final String POISTATUOTE = "poistatuote";
     public static final String POISTA = "poista";
     public static final String OSTOSKORI = "ostoskori";
+    public static final String TILAA = "tilaa";
     public static final String PERUUTA = "peruuta";
     public static final String LOGOUT = "logout";
     public static final String LOPETA = "lopeta";
@@ -89,7 +94,7 @@ public class Tiko2018ht {
                 while (loggedIn) {
                     String komento = sc.nextLine();
                     boolean syoteOk = false;
-                    if (komento.equals("apua")) {
+                    if (komento.equals(APUA)) {
                         aOhje();
                     } else if (komento.equals(HAE)) {
                         ArrayList hakutermit = new ArrayList<String>();
@@ -126,9 +131,9 @@ public class Tiko2018ht {
                             }
                         }
                         hae(con, haku, (String[])hakutermit.toArray(new String[hakutermit.size()]));
-                    } else if (komento.equals("listaa")) {
+                    } else if (komento.equals(LISTAA)) {
                         raportti(con);
-                    } else if (komento.equals("lisäätuote")) {
+                    } else if (komento.equals(LISAATUOTE)) {
                         long isbn = 0;
                         String teos_nimi = null;
                         String tekija = null;
@@ -174,7 +179,7 @@ public class Tiko2018ht {
                         }
                         lisaa(con, isbn, teos_nimi, tekija, tyyppi, luokka, ostohinta, paino, hinta);
                     
-                    } else if (komento.equals("poistatuote")) {
+                    } else if (komento.equals(POISTATUOTE)) {
                         System.out.println("Anna poistettavan teoksen nimi");
                         String teos_nimi = sc.nextLine();
                         System.out.println("Anna poistettavan teoksen tekijän nimi");
@@ -220,7 +225,7 @@ public class Tiko2018ht {
                 System.out.println("OHJE: apua, hae, listaa, lisää, poista, ostoskori, tilaa, logout, lopeta");
                 while (loggedIn) {
                     String komento = sc.nextLine();
-                    if (komento.equals("apua")) {
+                    if (komento.equals(APUA)) {
                         kOhje();
                     } else if (komento.equals(HAE)) {
                         ArrayList hakutermit = new ArrayList<String>();
@@ -257,7 +262,7 @@ public class Tiko2018ht {
                             }
                         }
                         hae(kdCon, haku, (String[])hakutermit.toArray(new String[hakutermit.size()]));
-                    } else if (komento.equals("listaa")) {
+                    } else if (komento.equals(LISTAA)) {
                         raportti(kdCon);
                     } else if (komento.startsWith(LISAA)) {
                         try {
@@ -297,7 +302,7 @@ public class Tiko2018ht {
                         kirjautunut = 0;
                         loggedIn = false;
                         System.out.println(ULOS);
-                    } else if (komento.equals("tilaa")) {
+                    } else if (komento.equals(TILAA)) {
                         tilaa(kdCon);
                     } else if (komento.equals(LOPETA)) {
                         loggedIn = false;
